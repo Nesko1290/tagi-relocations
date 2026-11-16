@@ -38,21 +38,78 @@ const COMMUNES = [
     text: "One of Geneva's larger communes, with modern apartment buildings, riverside paths and good transport links. A sensible choice when you need more room for your budget." },
 ];
 
+const LANG = document.documentElement.lang.startsWith('fr') ? 'fr' : 'en';
+
+// French texts for each commune (same order/ids as above)
+const FR = {
+  'grand-saconnex': { prep: 'au', commute: '10 min · bus', for: 'Trajets courts',
+    tag: 'Juste à côté de la Genève internationale.',
+    text: 'Immeubles modernes, bon rapport qualité-prix et le trajet le plus court vers le Palais des Nations et la plupart des organisations. Proche du Campus des Nations de l’École internationale. Le bruit des avions varie d’une rue à l’autre — Maureen le vérifie pour vous.' },
+  'petit-saconnex': { prep: 'au', commute: '5–15 min · à pied ou en bus', for: 'Familles et diplomates',
+    tag: 'Vert et résidentiel, à quelques minutes du Palais.',
+    text: 'Avenues arborées, parcs et nombreuses missions permanentes. À quelques pas ou quelques arrêts de bus de la plupart des organisations, et proche du Campus des Nations de l’École internationale.' },
+  bellevue: { prep: 'à', commute: '10–15 min · train ou voiture', for: 'Couples et familles',
+    tag: 'À côté de la Genève internationale, le lac à sa porte.',
+    text: 'Une commune verte sur la route du lac, juste au nord de la ville, avec une gare et un accès rapide aux organisations, à l’aéroport et aux écoles internationales de la rive droite.' },
+  genthod: { prep: 'à', commute: '15 min · train ou voiture', for: 'Familles en quête de calme',
+    tag: 'Un village paisible au bord du lac, à côté de la Genève internationale.',
+    text: 'Une petite commune tranquille entre Bellevue et Versoix, avec des maisons au bord du lac et sa propre gare. Proche de la Geneva English School et du Collège du Léman.' },
+  versoix: { prep: 'à', commute: '15–20 min · train', for: 'Familles et trajets d’école',
+    tag: 'Au bord du lac, la ville du Collège du Léman.',
+    text: 'Une ville détendue au bord du lac, avec plage, port et le Collège du Léman. Des trains fréquents rejoignent la gare de Sécheron, à quelques pas de la Genève internationale. C’est aussi là que vit Maureen — elle la connaît rue par rue.' },
+  cologny: { prep: 'à', commute: '20–25 min · voiture ou bus', for: 'Postes de direction et résidences',
+    tag: 'Des demeures de prestige face au lac.',
+    text: 'Villas et grands appartements avec vue sur le lac et le Jet d’eau, proches du campus de La Grande Boissière de l’École internationale. Une voiture facilite le quotidien.' },
+  'eaux-vives': { prep: 'aux', commute: '20–25 min · tram', for: 'Couples et amoureux de la ville',
+    tag: 'L’élégance au bord du lac, avec une âme de village.',
+    text: 'De beaux immeubles, le parc La Grange, la promenade du lac et une gare du Léman Express. Commerces, cafés et vieille ville à pied, et proche du campus de La Grande Boissière de l’École internationale.' },
+  meyrin: { prep: 'à', commute: '15–20 min · tram ou bus', for: 'Plus d’espace pour votre budget',
+    tag: 'Verte, pratique, proche du CERN et de l’aéroport.',
+    text: 'Une ville bien équipée, avec parcs, commerces et un tram direct vers le centre. Appréciée des familles internationales qui cherchent de l’espace à un prix raisonnable.' },
+  vernier: { prep: 'à', commute: '20–25 min · bus', for: 'Familles attentives au budget',
+    tag: 'Bon rapport qualité-prix, promenades vertes le long du Rhône.',
+    text: 'L’une des plus grandes communes du canton, avec des immeubles modernes, des chemins au bord du Rhône et de bonnes liaisons. Un choix judicieux quand il faut plus de place pour son budget.' },
+};
+if (LANG === 'fr') {
+  COMMUNES.forEach((c) => Object.assign(c, FR[c.id], { rent: c.rent.replace(/,/g, '’') }));
+}
+
+const T = LANG === 'fr' ? {
+  toIG: 'Vers la Genève internationale', rent: 'Loyer indicatif', bestFor: 'Idéal pour',
+  search: (c) => `Chercher ${c.prep} ${c.name}`,
+  openMenu: 'Ouvrir le menu', closeMenu: 'Fermer le menu',
+  invalid: 'Merci d’indiquer votre nom et une adresse e-mail valide.',
+  thanks: 'Merci — votre messagerie devrait s’ouvrir avec votre demande prête à envoyer.',
+  subject: (n) => `Recherche de logement — ${n}`,
+  body: ['Nom', 'E-mail', 'Organisation', 'Date d’arrivée / de déménagement', 'Ménage', 'Budget (CHF/mois)', 'Commune souhaitée'],
+  open: 'Ouvert aux suggestions',
+} : {
+  toIG: 'To International Geneva', rent: 'Indicative rent', bestFor: 'Best for',
+  search: (c) => `Search in ${c.name}`,
+  openMenu: 'Open menu', closeMenu: 'Close menu',
+  invalid: 'Please add your name and a valid email address.',
+  thanks: 'Thank you — your email app should now open with your request ready to send.',
+  subject: (n) => `Apartment search — ${n}`,
+  body: ['Name', 'Email', 'Organisation', 'Arrival / move date', 'Household', 'Budget (CHF/month)', 'Preferred commune'],
+  open: 'Open to suggestions',
+};
+
 const NS = 'http://www.w3.org/2000/svg';
 const $ = (s, el = document) => el.querySelector(s);
 const $$ = (s, el = document) => [...el.querySelectorAll(s)];
 
 // ---------- Hero: rotating commune ----------
 const rot = $('#rot');
-const words = COMMUNES.map((c) => c.name);
+const prep = $('#prep');
 let wi = 0;
 const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 if (rot && !reduce) {
   setInterval(() => {
     rot.classList.add('out');
     setTimeout(() => {
-      wi = (wi + 1) % words.length;
-      rot.textContent = words[wi];
+      wi = (wi + 1) % COMMUNES.length;
+      rot.textContent = COMMUNES[wi].name;
+      if (prep) prep.textContent = COMMUNES[wi].prep;
       rot.classList.remove('out');
     }, 450);
   }, 2600);
@@ -77,11 +134,11 @@ COMMUNES.forEach((c) => {
         <p class="commune-tag">${c.tag}</p>
         <p>${c.text}</p>
         <dl class="commune-facts">
-          <div><dt>To International Geneva</dt><dd>${c.commute}</dd></div>
-          <div><dt>Indicative rent</dt><dd>${c.rent}</dd></div>
-          <div><dt>Best for</dt><dd>${c.for}</dd></div>
+          <div><dt>${T.toIG}</dt><dd>${c.commute}</dd></div>
+          <div><dt>${T.rent}</dt><dd>${c.rent}</dd></div>
+          <div><dt>${T.bestFor}</dt><dd>${c.for}</dd></div>
         </dl>
-        <a href="#contact" class="commune-link" data-area="${c.name}">Search in ${c.name}</a>
+        <a href="#contact" class="commune-link" data-area="${c.name}">${T.search(c)}</a>
       </div></div>
     </div>`;
   $('.commune-btn', li).addEventListener('click', () => select(c.id, true));
@@ -128,7 +185,7 @@ onScroll();
 const setMenu = (open) => {
   menu.hidden = !open;
   burger.setAttribute('aria-expanded', String(open));
-  burger.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+  burger.setAttribute('aria-label', open ? T.closeMenu : T.openMenu);
   onScroll();
 };
 burger.addEventListener('click', () => setMenu(menu.hidden));
@@ -173,24 +230,24 @@ form.addEventListener('submit', (e) => {
   });
   const note = $('#form-note');
   if (!ok) {
-    note.textContent = 'Please add your name and a valid email address.';
+    note.textContent = T.invalid;
     note.classList.remove('ok');
     form.querySelector('.invalid')?.focus();
     return;
   }
   const body = [
-    `Name: ${data.get('name')}`,
-    `Email: ${data.get('email')}`,
-    `Organisation: ${data.get('org') || '—'}`,
-    `Arrival / move date: ${data.get('date') || '—'}`,
-    `Household: ${data.get('household')}`,
-    `Budget (CHF/month): ${data.get('budget')}`,
-    `Preferred commune: ${data.get('area') || 'Open to suggestions'}`,
+    `${T.body[0]}: ${data.get('name')}`,
+    `${T.body[1]}: ${data.get('email')}`,
+    `${T.body[2]}: ${data.get('org') || '—'}`,
+    `${T.body[3]}: ${data.get('date') || '—'}`,
+    `${T.body[4]}: ${data.get('household')}`,
+    `${T.body[5]}: ${data.get('budget')}`,
+    `${T.body[6]}: ${data.get('area') || T.open}`,
     '',
     `${data.get('msg') || ''}`,
   ].join('\n');
-  window.location.href = `mailto:${TO}?subject=${encodeURIComponent(`Apartment search — ${data.get('name')}`)}&body=${encodeURIComponent(body)}`;
-  note.textContent = 'Thank you — your email app should now open with your request ready to send.';
+  window.location.href = `mailto:${TO}?subject=${encodeURIComponent(T.subject(data.get('name')))}&body=${encodeURIComponent(body)}`;
+  note.textContent = T.thanks;
   note.classList.add('ok');
 });
 $$('input', form).forEach((i) => i.addEventListener('input', () => i.classList.remove('invalid')));

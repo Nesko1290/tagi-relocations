@@ -6,7 +6,8 @@ const burger = $('#burger');
 const setMenu = (open) => {
   menu.hidden = !open;
   burger.setAttribute('aria-expanded', String(open));
-  burger.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+  const fr = document.documentElement.lang.startsWith('fr');
+  burger.setAttribute('aria-label', open ? (fr ? 'Fermer le menu' : 'Close menu') : (fr ? 'Ouvrir le menu' : 'Open menu'));
 };
 burger.addEventListener('click', () => setMenu(menu.hidden));
 $$('a', menu).forEach((a) => a.addEventListener('click', () => setMenu(false)));
