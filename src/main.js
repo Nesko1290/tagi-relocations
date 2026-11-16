@@ -133,7 +133,7 @@ const spy = new IntersectionObserver((entries) => {
     if (en.isIntersecting) links.forEach((l) => l.classList.toggle('active', l.getAttribute('href') === `#${en.target.id}`));
   });
 }, { rootMargin: '-45% 0px -50% 0px' });
-['maureen', 'services', 'communes', 'process', 'faq'].forEach((id) => spy.observe(document.getElementById(id)));
+['maureen', 'family', 'services', 'communes', 'process', 'faq'].forEach((id) => spy.observe(document.getElementById(id)));
 
 // ---------- Reveal ----------
 const io = new IntersectionObserver((entries) => {

@@ -283,3 +283,17 @@ fieldset.field legend { margin-bottom: 10px; }
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
   .reveal { opacity: 1; transform: none; }
 }
+
+/* FAMILY */
+.family { padding: clamp(90px, 12vw, 160px) 0; border-top: 1px solid var(--rule); }
+.family .display { max-width: 20ch; }
+.values { display: grid; grid-template-columns: repeat(3, 1fr); margin-top: clamp(30px, 5vw, 60px); border-top: 1px solid var(--rule); }
+.value { padding: 30px 32px 0 0; }
+.value + .value { padding-left: 32px; border-left: 1px solid var(--rule); }
+.value .idx { display: block; margin-bottom: 16px; }
+.value h3 { font: 300 clamp(24px, 2.2vw, 30px)/1.2 var(--serif); margin-bottom: 12px; }
+.value p { color: var(--muted); font-size: 16px; margin: 0; max-width: 34ch; }
+@media (max-width: 760px) {
+  .values { grid-template-columns: 1fr; }
+  .value, .value + .value { padding: 26px 0; border-left: 0; border-bottom: 1px solid var(--rule); }
+}
