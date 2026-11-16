@@ -159,7 +159,7 @@ $$('.accordion details').forEach((d) => d.addEventListener('toggle', () => {
 }));
 
 // ---------- Contact form → email draft ----------
-const TO = 'contact@tagi-relocations.ch';
+const TO = 'contact@tagirelocations.com';
 const form = $('#form');
 form.addEventListener('submit', (e) => {
   e.preventDefault();
